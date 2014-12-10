@@ -61,11 +61,15 @@ var Visualization = React.createClass({
   render: function() {
     var svgWidth = Math.max(960, 100 + this.state.history.length * 100 + (this.state.history.length - 1) * 50);
 
+    var answerNotFound = !this.state.history.some(function(node) {
+      return node[0] == this.props.target || node[1] == this.props.target;
+    }, this);
+
     var historyNodes = this.state.history.map(function(node, i) {
       return (
-        <HistoryNode value={ node } historyId={ i } key={ "history" + i } />
+        <HistoryNode value={ node } historyId={ i } key={ "history" + i } isSolution={ node[0] == this.props.target || node[1] == this.props.target } />
       );
-    });
+    }, this);
 
     var historyConnectors = [];
     for (var i = 0; i < this.state.history.length - 1; i++) {
@@ -80,7 +84,7 @@ var Visualization = React.createClass({
       var mid   = (arr.length + 1) / 2;
       var angle = (i - mid + 1) * Math.PI / 5;
       return (
-        <FutureNode value={ node } lastCX={ cx } lastCY={ cy } angle={ angle } key={ "future" + i } appendHistoryHandler={ this.appendHistory } />
+        <FutureNode value={ node } lastCX={ cx } lastCY={ cy } angle={ angle } key={ "future" + i } appendHistoryHandler={ this.appendHistory } isSolution={ node[0] == this.props.target || node[1] == this.props.target } />
       );
     }, this);
 
@@ -99,8 +103,8 @@ var Visualization = React.createClass({
         <svg width={ svgWidth } height="280" ref="svg">
           { historyNodes }
           { historyConnectors }
-          { futureNodes }
-          { futureConnectors }
+          { answerNotFound && futureNodes }
+          { answerNotFound && futureConnectors }
           <UndoButton parentHeight="280" parentWidth={ svgWidth } undoHandler={ this.undo } enabled={ this.state.history.length > 1 } />
           <NewButton parentWidth={ svgWidth } />
         </svg>
@@ -112,9 +116,13 @@ var Visualization = React.createClass({
 var HistoryNode = React.createClass({
   render: function() {
     var xCoordinate = 60 + this.props.historyId * 150;
+    var circleClassName = "";
+    if (this.props.isSolution) {
+      circleClassName += "highlight-success"
+    }
     return (
       <g>
-        <circle cx={ xCoordinate } cy="140" r="50" />
+        <circle className={ circleClassName } cx={ xCoordinate } cy="140" r="50" />
         <text x={ xCoordinate } y="145" textAnchor="middle">
           { "(" + this.props.value[0] + ", " + this.props.value[1] + ")" }
         </text>
@@ -146,9 +154,14 @@ var FutureNode = React.createClass({
     var cx = this.props.lastCX + 105 * Math.cos(this.props.angle);
     var cy = this.props.lastCY + 105 * Math.sin(this.props.angle);
 
+    var circleClassName = "hoverable-target";
+    if (this.props.isSolution) {
+      circleClassName += " highlight-success";
+    }
+
     return (
       <g className="clickable hoverable" onClick={ this.updateHistory }>
-        <circle className="hoverable-target" cx={ cx } cy={ cy } r="25" />
+        <circle className={ circleClassName } cx={ cx } cy={ cy } r="25" />
         <text x={ cx } y={ cy + 5 } textAnchor="middle">
           { "(" + this.props.value[0] + ", " + this.props.value[1] + ")" }
         </text>
