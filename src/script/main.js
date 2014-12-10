@@ -102,6 +102,7 @@ var Visualization = React.createClass({
           { futureNodes }
           { futureConnectors }
           <UndoButton parentHeight="280" parentWidth={ svgWidth } undoHandler={ this.undo } enabled={ this.state.history.length > 1 } />
+          <NewButton parentWidth={ svgWidth } />
         </svg>
       </div>
     );
@@ -175,13 +176,26 @@ var UndoButton = React.createClass({
   render: function() {
     if (this.props.enabled) {
       return (
-        <text className="clickable" x={ this.props.parentWidth - 45 } y={ this.props.parentHeight - 5 } onClick={ this.props.undoHandler }>
-        Undo
+        <text className="clickable" x={ this.props.parentWidth - 10 } y={ this.props.parentHeight - 5 } onClick={ this.props.undoHandler } textAnchor="end">
+          Undo
         </text>
       );
     } else {
       return false;
     }
+  }
+});
+
+var NewButton = React.createClass({
+  newPuzzle: function() {
+    getVolumes(render);
+  },
+  render: function() {
+    return (
+      <text className="clickable" x={ this.props.parentWidth - 10 } y="20" textAnchor="end" onClick={ this.newPuzzle }>
+        New
+      </text>
+    );
   }
 });
 
@@ -192,11 +206,14 @@ document.body.appendChild(container);
 function getVolumes(fn) {
   vex.dialog.open({
     input: '<input name="X" type="number" min="1" placeholder="Volume for Container 1 (e.g. 4)">' +
-          '<input name="Y" type="number" min="1" placeholder="Volume for Container 2 (e.g. 9)">' +
-          '<input name="target" type="number" min="0" placeholder="Target Volume (e.g. 1)">',
+           '<input name="Y" type="number" min="1" placeholder="Volume for Container 2 (e.g. 9)">' +
+           '<input name="target" type="number" min="0" placeholder="Target Volume (e.g. 1)">',
     buttons: [
       $.extend({}, vex.dialog.buttons.YES, {
         text: 'Start'
+      }),
+      $.extend({}, vex.dialog.buttons.NO, {
+        text: 'Cancel'
       })
     ],
     callback: fn
@@ -213,4 +230,5 @@ function render(data) {
   );
 }
 
+render({});
 getVolumes(render);
