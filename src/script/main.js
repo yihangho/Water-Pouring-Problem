@@ -186,8 +186,31 @@ var UndoButton = React.createClass({
 });
 
 var container = document.createElement("div");
+container.className = "react-container";
 document.body.appendChild(container);
-React.render(
-  <Visualization cups={ [4, 9] } target={ 2 } />,
-  container
-);
+
+function getVolumes(fn) {
+  vex.dialog.open({
+    input: '<input name="X" type="number" min="1" placeholder="Volume for Container 1 (e.g. 4)">' +
+          '<input name="Y" type="number" min="1" placeholder="Volume for Container 2 (e.g. 9)">' +
+          '<input name="target" type="number" min="0" placeholder="Target Volume (e.g. 1)">',
+    buttons: [
+      $.extend({}, vex.dialog.buttons.YES, {
+        text: 'Start'
+      })
+    ],
+    callback: fn
+  });
+}
+
+function render(data) {
+  var containers = [parseInt(data.X) || 4, parseInt(data.Y) || 9];
+  var target     = parseInt(data.target) || 1;
+
+  React.render(
+    <Visualization cups={ containers } target={ target } />,
+    container
+  );
+}
+
+getVolumes(render);
