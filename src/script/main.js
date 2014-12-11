@@ -237,6 +237,8 @@ function render(data) {
   var containers = [parseInt(data.X) || 4, parseInt(data.Y) || 9];
   var target     = parseInt(data.target) || 1;
 
+  while (container.firstChild) container.removeChild(container.firstChild);
+
   React.render(
     <Visualization cups={ containers } target={ target } />,
     container
