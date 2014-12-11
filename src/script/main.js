@@ -218,6 +218,7 @@ document.body.appendChild(container);
 
 function getVolumes(fn) {
   vex.dialog.open({
+    message: '',
     input: '<input name="X" type="number" min="1" placeholder="Volume for Container 1 (e.g. 4)">' +
            '<input name="Y" type="number" min="1" placeholder="Volume for Container 2 (e.g. 9)">' +
            '<input name="target" type="number" min="0" placeholder="Target Volume (e.g. 1)">',
